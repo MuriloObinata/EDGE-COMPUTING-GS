@@ -1,0 +1,92 @@
+#include <LiquidCrystal.h>
+
+const int pinoRS = 11;         
+const int pinoE = 10;         
+const int pinoD4 = 7;           
+const int pinoD5 = 6;           
+const int pinoD6 = 5;          
+const int pinoD7 = 4;            
+
+const int pinoSensorHumidade = A5;      
+const int pinoTemp = A3;                 
+const int pinoGreenLED = 0;            
+const int pinoYellowLED = 12;           
+const int pinoRedLED = 13;            
+const int pinoBuzzer = 2;               
+
+LiquidCrystal lcd(pinoRS, pinoE, pinoD4, pinoD5, pinoD6, pinoD7);  // Objeto para controlar o LCD
+
+void setup() {
+  Serial.begin(9600);            // Inicializa a comunicação serial
+  lcd.begin(16, 2);              // Inicializa o LCD com 16 colunas e 2 linhas
+  pinMode(pinoGreenLED, OUTPUT);         // Define o pino do LED verde como saída
+  pinMode(pinoYellowLED, OUTPUT);        // Define o pino do LED amarelo como saída
+  pinMode(pinoRedLED, OUTPUT);           // Define o pino do LED vermelho como saída
+  pinMode(pinoBuzzer, OUTPUT);            // Define o pino do buzzer como saída
+  lcd.clear();                               // Limpa o LCD
+  lcd.setCursor(0, 0);                       // Define a posição do cursor no LCD
+  lcd.print("Inicializando...");          // Exibe mensagem "Inicializando..."
+}
+
+void loop() {
+  int valorSensorHumidade = analogRead(pinoSensorHumidade);     // Lê o valor do sensor de umidade
+  float valorTemp = analogRead(pinoTemp) * 0.48875;                 // Lê o valor do sensor de temperatura e converte para graus Celsius
+  lcd.clear();                                                          // Limpa o LCD
+
+  // Exibe a leitura da umidade no LCD
+  lcd.setCursor(0, 0);
+  lcd.print("Humidade: ");
+  lcd.print(valorSensorHumidade);
+  lcd.print("%");
+
+  // Verifica a faixa de umidade e exibe uma mensagem correspondente
+  if (valorSensorHumidade >= 50 && valorSensorHumidade <= 70) {
+    lcd.setCursor(0, 1);
+    lcd.print("humidade ideal");
+  } else if (valorSensorHumidade < 50){
+    lcd.setCursor(0, 1);
+    lcd.print("humidade baixa");
+    digitalWrite(pinoBuzzer, HIGH);  // Ativa o buzzer
+  } else {
+    lcd.setCursor(0, 1);
+    lcd.print("humidade alta");
+    digitalWrite(pinoBuzzer, HIGH);  // Ativa o buzzer
+  }
+
+  delay(2000);
+
+  lcd.clear();                       // Limpa o LCD
+
+  // Exibe a leitura da temperatura no LCD
+  lcd.setCursor(0, 0);
+  lcd.print("Temp: ");
+  lcd.print(valorTemp);
+  lcd.print(" C");
+
+  // Verifica a faixa de temperatura e exibe uma mensagem correspondente
+  if (valorTemp < 21) {
+    lcd.setCursor(0, 1);
+    lcd.print("Temp. muito baixa");
+    digitalWrite(pinoRedLED, HIGH);      // Ativa o LED vermelho
+    digitalWrite(pinoBuzzer, HIGH);      // Ativa o buzzer
+  } else if (valorTemp >= 21 && valorTemp <= 29) {
+    lcd.setCursor(0, 1);
+    lcd.print("Temp. ideal");
+    digitalWrite(pinoGreenLED, HIGH);    // Ativa o LED verde
+    digitalWrite(pinoRedLED, LOW);       // Desativa o LED vermelho
+    digitalWrite(pinoBuzzer, LOW);       // Desativa o buzzer
+  } else if (valorTemp > 29 && valorTemp < 35) {
+    lcd.setCursor(0, 1);
+    lcd.print("Temp. um pouco alta");
+    digitalWrite(pinoYellowLED, HIGH);   // Ativa o LED amarelo
+    digitalWrite(pinoRedLED, LOW);       // Desativa o LED vermelho
+    digitalWrite(pinoBuzzer, LOW);       // Desativa o buzzer
+  } else {
+    lcd.setCursor(0, 1);
+    lcd.print("Temp. muito alta");
+    digitalWrite(pinoRedLED, HIGH);      // Ativa o LED vermelho
+    digitalWrite(pinoBuzzer, HIGH);      // Ativa o buzzer
+  }
+
+  delay(2000);                          // Delay de 2 segundos
+}
