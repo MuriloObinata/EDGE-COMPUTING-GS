@@ -24,3 +24,6 @@ Neste projeto utilizamos:
 	1x Led vermelho;
 	1x Led amarelo;
 	1x Led Verde
+
+
+Link para a simulação no Tinkercad  https://www.tinkercad.com/things/dlEjZlER3Wi-copy-of-projeto-g2m/editel
